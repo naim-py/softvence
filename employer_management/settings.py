@@ -9,9 +9,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-kwtw-n3x^ehmpxxpykxoh**gj)v1c+xvoj=9r2us7&gd&djudo'
-
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+import os
+
+# Override settings with environment variables if present
+SECRET_KEY = os.getenv('SECRET_KEY', SECRET_KEY)
+DEBUG = os.getenv('DEBUG', str(DEBUG)).lower() == 'true'
+DATABASE_URL = os.getenv('DATABASE_URL', f"sqlite:///{BASE_DIR / 'db.sqlite3'}")
+
+# If using DATABASE_URL, parse it for Django's DATABASES setting
+if 'DATABASE_URL' in os.environ:
+    import dj_database_url
+    DATABASES['default'] = dj_database_url.parse(os.environ.get('DATABASE_URL'))
+# SECURITY WARNING: don't run with debug turned on in production!
+
 
 ALLOWED_HOSTS = []
 
